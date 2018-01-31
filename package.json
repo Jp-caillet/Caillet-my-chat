@@ -1,0 +1,26 @@
+{
+  "name": "caillet-my-chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jp-caillet/caillet-my-chat.git"
+  },
+  "author": "jp-caillet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jp-caillet/caillet-my-chat/issues"
+  },
+  "homepage": "https://github.com/Jp-caillet/caillet-my-chat#readme",
+  "devDependencies": {
+    "eslint": "^4.16.0"
+  },
+  "dependencies": {
+    "express": "^4.10.2",
+    "socket.io": "^2.0.4"
+  }
+}
