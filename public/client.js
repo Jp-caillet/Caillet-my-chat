@@ -2,6 +2,7 @@ const io = require('socket.io-client');
 const socket = io.connect('http://localhost:3000');
 //envoie d'un message au server
 const sendEl = document.querySelector('#send');
+document.querySelector('#chat').style.visibility = "hidden";
 
 sendEl.addEventListener('click', (e) => {
   e.preventDefault();
@@ -48,6 +49,8 @@ sendUser.addEventListener('click', (e) => {
   };
 
   if (user.username.length > 0) {
+  	document.querySelector('#chat').style.visibility = "";
+  	document.querySelector('#login').style.visibility = "hidden";
     socket.emit('user-login', user);
     document.querySelector('#m').focus();
   }
