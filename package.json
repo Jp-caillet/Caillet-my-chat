@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint ./index.js"
+    "lint": "eslint ./index.json",
+    "start": "eslint ./index.json && browserify -t babelify ./public/client.js > ./public/bundle.js -t brfs && node server"
   },
   "repository": {
     "type": "git",
@@ -17,10 +18,16 @@
   },
   "homepage": "https://github.com/Jp-caillet/caillet-my-chat#readme",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "eslint": "^4.16.0"
   },
   "dependencies": {
+    "browserify": "^15.2.0",
     "express": "^4.10.2",
+    "brfs": "^1.4.4",
+    "babelify": "^8.0.0",
+    "browserify-fs": "^1.0.0",
     "socket.io": "^2.0.4"
   }
 }
