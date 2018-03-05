@@ -5,6 +5,8 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const io = require('socket.io')(server);
+const log = require('caillet-my-log');
+const Botyt = require('caillet-my-bot-youtube');
 
 // On gère les requêtes http des utilisateurs en leur renvoyant les fichiers du dossier 'public'
 app.use('/', express.static(`${__dirname}/public`));
@@ -47,9 +49,33 @@ io.on('connection', (socket) => {
    * Réception de l'événement 'chat-message' et réémission vers tous les utilisateurs
    */
   socket.on('chat-message', (message) => {
-    message.username = loggedUser.username;
-    console.log('message de : ' + message.username);
-    io.emit('chat-message', message);
+    if (message.text.indexOf('/ytb') !== - 1) {
+      //console.log(message.text);
+      const request = message.text.substring(message.text.indexOf('/ytb') + 3);
+
+      console.log(request);
+      const mybot = new Botyt(request);
+
+      mybot.run();
+
+      for (let i = 0; i < 5; i ++) {
+        if (mybot.getId(i)) {
+          message.username = 'Prince of YouTube';
+          message.log = log();
+          console.log(mybot.getImgVideo(i));
+          message.title = mybot.getTitleVideo(i);
+          message.urlVid = mybot.getImgVideo(i);
+          message.id = mybot.getId(i);
+          socket.emit('message-bot-youtube', message);
+        }
+      }
+      console.log(mybot.getId(1));
+    } else {
+      message.username = loggedUser.username;
+      message.log = log();
+      console.log('message de : ' + message.username);
+      io.emit('chat-message', message);
+    }
   });
 });
 

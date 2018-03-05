@@ -6386,7 +6386,8 @@ const io = require('socket.io-client');
 const socket = io.connect('http://localhost:3000');
 //envoie d'un message au server
 const sendEl = document.querySelector('#send');
-document.querySelector('#chat').style.visibility = "hidden";
+
+document.querySelector('#chat').style.visibility = 'hidden';
 
 sendEl.addEventListener('click', e => {
   e.preventDefault();
@@ -6416,9 +6417,36 @@ socket.on('service-message', message => {
 //reception d'un message du server
 socket.on('chat-message', message => {
   const nouveauMessage = document.createElement('li');
-  const textnode = document.createTextNode(message.username + ': ' + message.text);
+  const textnode = document.createTextNode(message.username + ': ' + message.text + ' (' + message.log + ')');
 
   nouveauMessage.appendChild(textnode);
+  document.querySelector('#messages').appendChild(nouveauMessage);
+});
+
+//reception d'un message du bot youtube
+socket.on('message-bot-youtube', message => {
+  const nouveauMessage = document.createElement('li');
+  const textnode = document.createTextNode(`${message.username} :`);
+  const titleString = document.createTextNode(message.title);
+
+  const nouveauDiv = document.createElement('div');
+  const nouveauImage = document.createElement('img');
+  nouveauImage.setAttribute('src', message.urlVid);
+  nouveauImage.setAttribute('id', message.id);
+
+  nouveauImage.addEventListener('click', e => {
+    const nouveauIframe = document.createElement('iframe');
+    nouveauIframe.setAttribute('id', 'player');
+    nouveauIframe.setAttribute('type', 'text/html');
+    nouveauIframe.setAttribute('width', '650');
+    nouveauIframe.setAttribute('height', '300');
+    nouveauIframe.setAttribute('src', `http://www.youtube.com/embed/${message.id}`);
+    document.querySelector('#messages').appendChild(nouveauIframe);
+  });
+  nouveauMessage.appendChild(textnode);
+  nouveauMessage.appendChild(titleString);
+  nouveauDiv.appendChild(nouveauImage);
+  nouveauMessage.appendChild(nouveauDiv);
   document.querySelector('#messages').appendChild(nouveauMessage);
 });
 
@@ -6433,8 +6461,8 @@ sendUser.addEventListener('click', e => {
   };
 
   if (user.username.length > 0) {
-    document.querySelector('#chat').style.visibility = "";
-    document.querySelector('#login').style.visibility = "hidden";
+    document.querySelector('#chat').style.visibility = '';
+    document.querySelector('#login').style.visibility = 'hidden';
     socket.emit('user-login', user);
     document.querySelector('#m').focus();
   }
