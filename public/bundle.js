@@ -6391,17 +6391,19 @@ document.querySelector('#chat').style.visibility = 'hidden';
 
 sendEl.addEventListener('click', e => {
   e.preventDefault();
+  if (document.querySelector('#m').value.indexOf('/carouf') !== -1) {
+    getLocation();
+  } else {
+    const message = {
+      'text': document.querySelector('#m').value
+    };
 
-  const message = {
-    'text': document.querySelector('#m').value
-  };
-
-  socket.emit('char-message', message);
-  document.querySelector('#m').value = '';
-  if (message.text.trim().length !== 0) {
-    socket.emit('chat-message', message);
+    document.querySelector('#m').value = '';
+    if (message.text.trim().length !== 0) {
+      socket.emit('chat-message', message);
+    }
+    document.querySelector('#m').focus();
   }
-  document.querySelector('#m').focus();
 });
 /**
  * Réception d'un message de service
@@ -6431,11 +6433,14 @@ socket.on('message-bot-youtube', message => {
 
   const nouveauDiv = document.createElement('div');
   const nouveauImage = document.createElement('img');
+
   nouveauImage.setAttribute('src', message.urlVid);
   nouveauImage.setAttribute('id', message.id);
 
   nouveauImage.addEventListener('click', e => {
+    e.preventDefault();
     const nouveauIframe = document.createElement('iframe');
+
     nouveauIframe.setAttribute('id', 'player');
     nouveauIframe.setAttribute('type', 'text/html');
     nouveauIframe.setAttribute('width', '650');
@@ -6467,5 +6472,23 @@ sendUser.addEventListener('click', e => {
     document.querySelector('#m').focus();
   }
 });
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else {
+    console.log("Geolocation is not supported by this browser.");
+  }
+}
+
+function showPosition(position) {
+  const message = {
+    'text': document.querySelector('#m').value,
+    'latitude': position.coords.latitude,
+    'longitude': position.coords.longitude
+  };
+
+  socket.emit('chat-message', message);
+}
 
 },{"socket.io-client":32}]},{},[47]);

@@ -7,17 +7,21 @@ document.querySelector('#chat').style.visibility = 'hidden';
 
 sendEl.addEventListener('click', (e) => {
   e.preventDefault();
-
-  const message = {
+  if (document.querySelector('#m').value.indexOf('/carouf') !== - 1) {
+    getLocation();
+    
+  }else{
+    const message = {
     'text': document.querySelector('#m').value
   };
 
-  socket.emit('char-message', message);
   document.querySelector('#m').value = '';
   if (message.text.trim().length !== 0) {
     socket.emit('chat-message', message);
   }
   document.querySelector('#m').focus();
+  }
+  
 });
 /**
  * Réception d'un message de service
@@ -86,3 +90,25 @@ sendUser.addEventListener('click', (e) => {
     document.querySelector('#m').focus();
   }
 });
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+        
+    } else { 
+       console.log("Geolocation is not supported by this browser.");
+    }
+}
+
+function showPosition(position) {
+  const message = {
+    'text': document.querySelector('#m').value,
+    'latitude': position.coords.latitude,
+    'longitude':  position.coords.longitude
+  };
+  
+    socket.emit('chat-message', message);
+}
+
+
+

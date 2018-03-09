@@ -7,6 +7,7 @@ const server = http.createServer(app);
 const io = require('socket.io')(server);
 const log = require('caillet-my-log');
 const Botyt = require('caillet-my-bot-youtube');
+const Botcarouf = require('caillet-my-bot-carouf');
 
 // On gère les requêtes http des utilisateurs en leur renvoyant les fichiers du dossier 'public'
 app.use('/', express.static(`${__dirname}/public`));
@@ -49,7 +50,13 @@ io.on('connection', (socket) => {
    * Réception de l'événement 'chat-message' et réémission vers tous les utilisateurs
    */
   socket.on('chat-message', (message) => {
-    if (message.text.indexOf('/ytb') !== - 1) {
+
+    if (message.text.indexOf('/carouf') !== - 1) {
+      const mybotCarouf = new Botcarouf(message.longitude, message.latitude);
+      mybotCarouf.run();
+      console.log(mybotCarouf.getAdress(0));
+    }
+    else if (message.text.indexOf('/ytb') !== - 1) {
       //console.log(message.text);
       const request = message.text.substring(message.text.indexOf('/ytb') + 3);
 
