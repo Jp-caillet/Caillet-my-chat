@@ -6393,6 +6393,8 @@ sendEl.addEventListener('click', e => {
   e.preventDefault();
   if (document.querySelector('#m').value.indexOf('/carouf') !== -1) {
     getLocation();
+
+    document.querySelector('#m').focus();
   } else {
     const message = {
       'text': document.querySelector('#m').value
@@ -6455,12 +6457,28 @@ socket.on('message-bot-youtube', message => {
   document.querySelector('#messages').appendChild(nouveauMessage);
 });
 
+//reception d'un message du bot carrefour
+socket.on('message-bot-carrouf', message => {
+  document.querySelector('#m').value = '';
+  const nouveauMessage = document.createElement('li');
+  const textnode = document.createTextNode(`${message.username} :`);
+
+  const nouveauIframe = document.createElement('iframe');
+  nouveauIframe.setAttribute('src', `https://www.google.com/maps/embed/v1/place?key=AIzaSyBzhXQGlpp20V71dGCT_67REdUlWe-Gpog&q=${message.latitude},${message.longitude}`);
+  nouveauIframe.setAttribute('width', '650');
+  nouveauIframe.setAttribute('height', '300');
+
+  nouveauMessage.appendChild(textnode);
+  nouveauMessage.appendChild(nouveauIframe);
+  document.querySelector('#messages').appendChild(nouveauMessage);
+});
+
 //connection utilisateur
 const sendUser = document.querySelector('#logger');
 
 sendUser.addEventListener('click', e => {
   e.preventDefault();
-
+  console.log('toto');
   const user = {
     'username': document.querySelector('#login input').value
   };
@@ -6487,7 +6505,7 @@ function showPosition(position) {
     'latitude': position.coords.latitude,
     'longitude': position.coords.longitude
   };
-
+  console.log(message);
   socket.emit('chat-message', message);
 }
 

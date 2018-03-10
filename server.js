@@ -50,17 +50,18 @@ io.on('connection', (socket) => {
    * Réception de l'événement 'chat-message' et réémission vers tous les utilisateurs
    */
   socket.on('chat-message', (message) => {
-
     if (message.text.indexOf('/carouf') !== - 1) {
+      console.log('Carrouf');
+      message.username = 'Carrouf le ouf';
       const mybotCarouf = new Botcarouf(message.longitude, message.latitude);
-      mybotCarouf.run();
-      console.log(mybotCarouf.getAdress(0));
-    }
-    else if (message.text.indexOf('/ytb') !== - 1) {
-      //console.log(message.text);
-      const request = message.text.substring(message.text.indexOf('/ytb') + 3);
 
-      console.log(request);
+      mybotCarouf.run();
+      message.latitude = mybotCarouf.getLatitude(0);
+      message.longitude = mybotCarouf.getLongitude(0);
+      socket.emit('message-bot-carrouf', message);
+    } else if (message.text.indexOf('/ytb') !== - 1) {
+      console.log('youtube');
+      const request = message.text.substring(message.text.indexOf('/ytb') + 4);
       const mybot = new Botyt(request);
 
       mybot.run();
@@ -78,6 +79,7 @@ io.on('connection', (socket) => {
       }
       console.log(mybot.getId(1));
     } else {
+      console.log('normal');
       message.username = loggedUser.username;
       message.log = log();
       console.log('message de : ' + message.username);

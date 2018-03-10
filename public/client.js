@@ -9,19 +9,19 @@ sendEl.addEventListener('click', (e) => {
   e.preventDefault();
   if (document.querySelector('#m').value.indexOf('/carouf') !== - 1) {
     getLocation();
-    
-  }else{
-    const message = {
-    'text': document.querySelector('#m').value
-  };
 
-  document.querySelector('#m').value = '';
-  if (message.text.trim().length !== 0) {
-    socket.emit('chat-message', message);
+    document.querySelector('#m').focus();
+  } else {
+    const message = {
+      'text': document.querySelector('#m').value
+    };
+
+    document.querySelector('#m').value = '';
+    if (message.text.trim().length !== 0) {
+      socket.emit('chat-message', message);
+    }
+    document.querySelector('#m').focus();
   }
-  document.querySelector('#m').focus();
-  }
-  
 });
 /**
  * Réception d'un message de service
@@ -73,12 +73,29 @@ socket.on('message-bot-youtube', (message) => {
   document.querySelector('#messages').appendChild(nouveauMessage);
 });
 
+//reception d'un message du bot carrefour
+socket.on('message-bot-carrouf', (message) => {
+  document.querySelector('#m').value = '';
+  const nouveauMessage = document.createElement('li');
+  const textnode = document.createTextNode(`${message.username} :`);
+
+  const nouveauIframe = document.createElement('iframe');
+
+  nouveauIframe.setAttribute('src', `https://www.google.com/maps/embed/v1/place?key=AIzaSyBzhXQGlpp20V71dGCT_67REdUlWe-Gpog&q=${message.latitude},${message.longitude}`);
+  nouveauIframe.setAttribute('width', '650');
+  nouveauIframe.setAttribute('height', '300');
+
+  nouveauMessage.appendChild(textnode);
+  nouveauMessage.appendChild(nouveauIframe);
+  document.querySelector('#messages').appendChild(nouveauMessage);
+});
+
 //connection utilisateur
 const sendUser = document.querySelector('#logger');
 
 sendUser.addEventListener('click', (e) => {
   e.preventDefault();
-
+  console.log('toto');
   const user = {
     'username': document.querySelector('#login input').value
   };
@@ -91,24 +108,21 @@ sendUser.addEventListener('click', (e) => {
   }
 });
 
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
-        
-    } else { 
-       console.log("Geolocation is not supported by this browser.");
-    }
+function getLocation () {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else {
+    console.log('Geolocation is not supported by this browser.');
+  }
 }
 
-function showPosition(position) {
+function showPosition (position) {
   const message = {
     'text': document.querySelector('#m').value,
     'latitude': position.coords.latitude,
-    'longitude':  position.coords.longitude
+    'longitude': position.coords.longitude
   };
-  
-    socket.emit('chat-message', message);
+
+  console.log(message);
+  socket.emit('chat-message', message);
 }
-
-
-
