@@ -7,7 +7,7 @@ document.querySelector('#chat').style.visibility = 'hidden';
 
 sendEl.addEventListener('click', (e) => {
   e.preventDefault();
-  if (document.querySelector('#m').value.indexOf('/carouf') !== - 1) {
+  if (document.querySelector('#m').value.indexOf('/carouf') !== - 1 || document.querySelector('#m').value.indexOf('/uber to') !== - 1) {
     getLocation();
 
     document.querySelector('#m').focus();
@@ -72,7 +72,21 @@ socket.on('message-bot-youtube', (message) => {
   nouveauMessage.appendChild(nouveauDiv);
   document.querySelector('#messages').appendChild(nouveauMessage);
 });
+//reception d'un message du bot uber
+socket.on('message-bot-uber', (message) => {
+  document.querySelector('#m').value = '';
+  const nouveauMessage = document.createElement('li');
+  const textnode = document.createTextNode(message.username + ': vous voulez aller ' + message.text + ' ca vous coutera ' + message.price+ ' grace à '+ message.name+' pour une distance de '+message.distance+'km ');
+   const nouveauIframe = document.createElement('iframe');
 
+  nouveauIframe.setAttribute('src', `https://www.google.com/maps/embed/v1/directions?key=AIzaSyC7RyFv7u6BLK5sEYUcSF9y2x_lqGg0iVA&origin=${message.city}&destination=${message.text}&avoid=tolls|highways`);
+  nouveauIframe.setAttribute('width', '650');
+  nouveauIframe.setAttribute('height', '300');
+  nouveauMessage.appendChild(textnode);
+  nouveauMessage.appendChild(nouveauIframe);
+  document.querySelector('#messages').appendChild(nouveauMessage);
+  //console.log(message);
+});
 //reception d'un message du bot carrefour
 socket.on('message-bot-carrouf', (message) => {
   document.querySelector('#m').value = '';
@@ -81,7 +95,7 @@ socket.on('message-bot-carrouf', (message) => {
 
   const nouveauIframe = document.createElement('iframe');
 
-  nouveauIframe.setAttribute('src', `https://www.google.com/maps/embed/v1/place?key=AIzaSyBzhXQGlpp20V71dGCT_67REdUlWe-Gpog&q=${message.latitude},${message.longitude}`);
+  nouveauIframe.setAttribute('src', `https://www.google.com/maps/embed/v1/place?key=AIzaSyC7RyFv7u6BLK5sEYUcSF9y2x_lqGg0iVA&q=${message.latitude},${message.longitude}`);
   nouveauIframe.setAttribute('width', '650');
   nouveauIframe.setAttribute('height', '300');
 
@@ -122,7 +136,5 @@ function showPosition (position) {
     'latitude': position.coords.latitude,
     'longitude': position.coords.longitude
   };
-
-  console.log(message);
   socket.emit('chat-message', message);
 }
