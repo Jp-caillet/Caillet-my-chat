@@ -76,8 +76,8 @@ socket.on('message-bot-youtube', (message) => {
 socket.on('message-bot-uber', (message) => {
   document.querySelector('#m').value = '';
   const nouveauMessage = document.createElement('li');
-  const textnode = document.createTextNode(message.username + ': vous voulez aller ' + message.text + ' ca vous coutera ' + message.price+ ' grace à '+ message.name+' pour une distance de '+message.distance+'km ');
-   const nouveauIframe = document.createElement('iframe');
+  const textnode = document.createTextNode(message.username + ': vous voulez aller ' + message.text + ' ca vous coutera ' + message.price + ' grace à ' + message.name + ' pour une distance de ' + message.distance + 'km ');
+  const nouveauIframe = document.createElement('iframe');
 
   nouveauIframe.setAttribute('src', `https://www.google.com/maps/embed/v1/directions?key=AIzaSyC7RyFv7u6BLK5sEYUcSF9y2x_lqGg0iVA&origin=${message.city}&destination=${message.text}&avoid=tolls|highways`);
   nouveauIframe.setAttribute('width', '650');
@@ -136,5 +136,6 @@ function showPosition (position) {
     'latitude': position.coords.latitude,
     'longitude': position.coords.longitude
   };
+
   socket.emit('chat-message', message);
 }

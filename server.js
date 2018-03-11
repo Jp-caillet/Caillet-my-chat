@@ -11,10 +11,6 @@ const Botcarouf = require('caillet-my-bot-carouf');
 const Botuber = require('caillet-my-bot-uber');
 const geocoder = require('geocoder');
 const getCoords = require('city-to-coords');
-const cities = require('cities');
- 
-
-
 
 // On gère les requêtes http des utilisateurs en leur renvoyant les fichiers du dossier 'public'
 app.use('/', express.static(`${__dirname}/public`));
@@ -59,30 +55,34 @@ io.on('connection', (socket) => {
   socket.on('chat-message', (message) => {
     if (message.text.indexOf('/uber to') !== - 1) {
       const request = message.text.substring(message.text.indexOf('/uber to') + 8);
-      getCoords(request)
-  .then((coords) => {
-    const mybotUber = new Botuber(message.longitude, message.latitude,coords.lng,coords.lat);
-    mybotUber.run();
-    geocoder.reverseGeocode(  message.latitude, message.longitude, function ( err, data ) {
-     
-        const messages = {
-    'username' : 'fast car',
-    'text': request,
-    'latitude': message.latitude,
-    'longitude': message.longitude,
-    'longitudeend' : coords.lng,
-    'latitudeend' : coords.lat,
-    'price': mybotUber.getPriceEstimate(0),
-    'distance': mybotUber.getDistance(0),
-    'name': mybotUber.getName(0),
-    'city' : data.results[0].formatted_address
-  };
-    socket.emit('message-bot-uber', messages);     
-});
-  });
 
-    }
-    else if (message.text.indexOf('/carouf') !== - 1) {
+      getCoords(request)
+        .then((coords) => {
+          const mybotUber = new Botuber(message.longitude, message.latitude, coords.lng, coords.lat);
+
+          mybotUber.run();
+          geocoder.reverseGeocode(message.latitude, message.longitude, function gecod (err, data) {
+            if (err) {
+              return null;
+            }
+            const messages = {
+              'username': 'fast car',
+              'text': request,
+              'latitude': message.latitude,
+              'longitude': message.longitude,
+              'longitudeend': coords.lng,
+              'latitudeend': coords.lat,
+              'price': mybotUber.getPriceEstimate(0),
+              'distance': mybotUber.getDistance(0),
+              'name': mybotUber.getName(0),
+              'city': data.results[0].formatted_address
+            };
+
+            socket.emit('message-bot-uber', messages);
+            return null;
+          });
+        });
+    } else if (message.text.indexOf('/carouf') !== - 1) {
       console.log('Carrouf');
       message.username = 'Carrouf le ouf';
       const mybotCarouf = new Botcarouf(message.longitude, message.latitude);
