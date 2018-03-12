@@ -6426,6 +6426,15 @@ socket.on('chat-message', message => {
   nouveauMessage.appendChild(textnode);
   document.querySelector('#messages').appendChild(nouveauMessage);
 });
+//reception d'une erreur
+socket.on('message-error', message => {
+  document.querySelector('#m').value = '';
+  const nouveauMessage = document.createElement('li');
+  const textnode = document.createTextNode(message.username + ': ' + message.error);
+
+  nouveauMessage.appendChild(textnode);
+  document.querySelector('#messages').appendChild(nouveauMessage);
+});
 
 //reception d'un message du bot youtube
 socket.on('message-bot-youtube', message => {
@@ -6520,6 +6529,7 @@ function showPosition(position) {
     'latitude': position.coords.latitude,
     'longitude': position.coords.longitude
   };
+
   socket.emit('chat-message', message);
 }
 

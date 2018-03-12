@@ -8,7 +8,7 @@ const io = require('socket.io')(server);
 const log = require('caillet-my-log');
 const Botyt = require('caillet-my-bot-youtube');
 const Botcarouf = require('caillet-my-bot-carouf');
-const Botuber = require('caillet-my-bot-uber');
+const Botuber = require('bot-uber');
 const geocoder = require('geocoder');
 const getCoords = require('city-to-coords');
 
@@ -65,20 +65,39 @@ io.on('connection', (socket) => {
             if (err) {
               return null;
             }
-            const messages = {
-              'username': 'fast car',
-              'text': request,
-              'latitude': message.latitude,
-              'longitude': message.longitude,
-              'longitudeend': coords.lng,
-              'latitudeend': coords.lat,
-              'price': mybotUber.getPriceEstimate(0),
-              'distance': mybotUber.getDistance(0),
-              'name': mybotUber.getName(0),
-              'city': data.results[0].formatted_address
-            };
+            if (mybotUber.getDistance(0)) {
+              try {
+                const messages = {
+                  'username': 'fast car',
+                  'text': request,
+                  'latitude': message.latitude,
+                  'longitude': message.longitude,
+                  'longitudeend': coords.lng,
+                  'latitudeend': coords.lat,
+                  'price': mybotUber.getPriceEstimate(0),
+                  'distance': mybotUber.getDistance(0),
+                  'name': mybotUber.getName(0),
+                  'city': data.results[0].formatted_address
+                };
 
-            socket.emit('message-bot-uber', messages);
+                socket.emit('message-bot-uber', messages);
+              } catch (error) {
+                const messages = {
+                  'username': 'fast car',
+                  'error': 'city not found'
+                };
+
+                socket.emit('message-error', messages);
+              }
+            } else {
+              const messages = {
+                'username': 'fast car',
+                'error': 'pas de uber pour cette desination'
+              };
+
+              socket.emit('message-error', messages);
+            }
+
             return null;
           });
         });
