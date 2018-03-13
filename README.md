@@ -40,7 +40,7 @@ affiche toute les commandes du chatbot
 
 
 | name | params | return 
-| --- | --- | --- | ---
+| --- | --- | --- 
 | +botcombat() | message : object | null 
 | +bothearstonne() | message : object | null
 | +botubeur() | message : object | null
