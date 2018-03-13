@@ -29,7 +29,7 @@
     "browserify": "^15.2.0",
     "browserify-fs": "^1.0.0",
     "caillet-my-bot-carouf": "^1.0.0",
-    "caillet-my-bot-hearstone": "file:../caillet-my-bot-hearstone",
+    "caillet-my-bot-hearstone": "^1.0.0",
     "caillet-my-bot-youtube": "^1.0.0",
     "caillet-my-log": "^1.0.0",
     "cities": "^1.1.2",
