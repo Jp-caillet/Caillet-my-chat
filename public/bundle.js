@@ -6466,6 +6466,7 @@ socket.on('message-combat', message => {
   const winner = document.createTextNode('and the winner is ' + message.winner);
   const img2 = document.createElement('img');
   const versus = document.createElement('img');
+
   img1.setAttribute('src', message.url1);
   img2.setAttribute('src', message.url2);
   versus.setAttribute('src', 'http://img.over-blog-kiwi.com/1/00/19/38/20140818/ob_af021d_versus-3af003f.png');
@@ -6559,13 +6560,13 @@ sendUser.addEventListener('click', e => {
   }
 });
 
-const getLocation = () => {
+function getLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition);
   }
-};
+}
 
-const showPosition = position => {
+function showPosition(position) {
   const message = {
     'text': document.querySelector('#m').value,
     'latitude': position.coords.latitude,
@@ -6573,6 +6574,6 @@ const showPosition = position => {
   };
 
   socket.emit('chat-message', message);
-};
+}
 
 },{"socket.io-client":32}]},{},[47]);
