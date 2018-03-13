@@ -24,7 +24,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     if (loggedUser) {
-      var serviceMessage = {
+      const serviceMessage = {
         'text': 'User "' + loggedUser.username + '" disconnected',
         'type': 'logout'
       };
@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
   socket.on('user-login', (user) => {
     loggedUser = user;
     if (loggedUser) {
-      var serviceMessage = {
+      const serviceMessage = {
         'text': 'User "' + loggedUser.username + '" logged in',
         'type': 'login'
       };
@@ -52,14 +52,35 @@ io.on('connection', (socket) => {
    * Réception de l'événement 'chat-message' et réémission vers tous les utilisateurs
    */
   socket.on('chat-message', (message) => {
-    if (message.text.indexOf('/hearstone') !== - 1) {
-      console.log(message.text);
+    if (message.text.indexOf('/combat') !== - 1) {
+      const request = message.text.substring(message.text.indexOf('/combat') + 8);
+      const res = request.split('/');
+      const mybotHearstone1 = new Bothearstone(res[0]);
+
+      mybotHearstone1.run();
+      const mybotHearstone2 = new Bothearstone(res[1]);
+
+      mybotHearstone2.run();
+      let tour1 = mybotHearstone1.getAttack(0) - mybotHearstone2.getHealth(0);
+      let tour2 = mybotHearstone2.getAttack(0) - mybotHearstone1.getHealth(0);
+
+      if (tour1 > tour2) {
+        message.winner = res[0];
+      } else if (tour1 < tour2) {
+        message.winner = res[1];
+      } else {
+        message.winner = 'égalité';
+      }
+      message.username = 'L\'aubergiste';
+      message.url1 = mybotHearstone1.getImg(0);
+      message.url2 = mybotHearstone2.getImg(0);
+
+      socket.emit('message-combat', message);
+    } else if (message.text.indexOf('/hearstone') !== - 1) {
       const request = message.text.substring(message.text.indexOf('/hearstone') + 11);
       const mybotHearstone = new Bothearstone(request);
 
       mybotHearstone.run();
-      console.log(request);
-      console.log(mybotHearstone.getJson());
       message.username = 'L\'aubergiste';
       message.url = mybotHearstone.getImg(0);
       socket.emit('message-hearstone', message);
@@ -77,9 +98,7 @@ io.on('connection', (socket) => {
             }
             if (mybotUber.getDistance(0)) {
               try {
-                const messages = {
-                  'username': 'fast car',
-                  'text': request,
+                const messages = {'username': 'fast car', 'text': request,
                   'latitude': message.latitude,
                   'longitude': message.longitude,
                   'longitudeend': coords.lng,
@@ -143,7 +162,9 @@ io.on('connection', (socket) => {
       const helper = [
         '/ytb search (name of video)',
         '/carouf (permet d\'avoir la liste des carrefour a proximité)',
-        '/uber to (ville ou vous souhaitez aller)'];
+        '/uber to (ville ou vous souhaitez aller)',
+        '/hearstone (name of card)',
+        '/combat (name of card 1) / (name of card 2)'];
 
       for (let i = 0; i < helper.length; i ++) {
         message.username = 'Père castor';

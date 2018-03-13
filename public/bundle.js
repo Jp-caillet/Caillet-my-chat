@@ -6444,15 +6444,39 @@ socket.on('message-helper', message => {
   nouveauMessage.appendChild(textnode);
   document.querySelector('#messages').appendChild(nouveauMessage);
 });
-//reception d'un helper
+//reception du bot hearstone
 socket.on('message-hearstone', message => {
   document.querySelector('#m').value = '';
   const nouveauMessage = document.createElement('li');
   const img = document.createElement('img');
   const textnode = document.createTextNode(message.username + ': ');
+
   img.setAttribute('src', message.url);
   nouveauMessage.appendChild(textnode);
   nouveauMessage.appendChild(img);
+  document.querySelector('#messages').appendChild(nouveauMessage);
+});
+//reception du combat hearstone
+socket.on('message-combat', message => {
+  document.querySelector('#m').value = '';
+  const nouveauMessage = document.createElement('li');
+  const img1 = document.createElement('img');
+  const textnode = document.createTextNode(message.username + ': ');
+  const br = document.createElement('br');
+  const winner = document.createTextNode('and the winner is ' + message.winner);
+  const img2 = document.createElement('img');
+  const versus = document.createElement('img');
+  img1.setAttribute('src', message.url1);
+  img2.setAttribute('src', message.url2);
+  versus.setAttribute('src', 'http://img.over-blog-kiwi.com/1/00/19/38/20140818/ob_af021d_versus-3af003f.png');
+
+  nouveauMessage.appendChild(textnode);
+  nouveauMessage.appendChild(img1);
+  nouveauMessage.appendChild(versus);
+  nouveauMessage.appendChild(img2);
+  nouveauMessage.appendChild(br);
+  nouveauMessage.appendChild(winner);
+
   document.querySelector('#messages').appendChild(nouveauMessage);
 });
 //reception d'un message du bot youtube
@@ -6535,13 +6559,13 @@ sendUser.addEventListener('click', e => {
   }
 });
 
-function getLocation() {
+const getLocation = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition);
-  } else {}
-}
+  }
+};
 
-function showPosition(position) {
+const showPosition = position => {
   const message = {
     'text': document.querySelector('#m').value,
     'latitude': position.coords.latitude,
@@ -6549,6 +6573,6 @@ function showPosition(position) {
   };
 
   socket.emit('chat-message', message);
-}
+};
 
 },{"socket.io-client":32}]},{},[47]);
