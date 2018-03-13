@@ -11,6 +11,7 @@ const Botcarouf = require('caillet-my-bot-carouf');
 const Botuber = require('bot-uber');
 const geocoder = require('geocoder');
 const getCoords = require('city-to-coords');
+const Bothearstone = require('caillet-my-bot-hearstone');
 
 // On gère les requêtes http des utilisateurs en leur renvoyant les fichiers du dossier 'public'
 app.use('/', express.static(`${__dirname}/public`));
@@ -23,7 +24,6 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     if (loggedUser) {
-      console.log('user disconnected : ' + loggedUser.username);
       var serviceMessage = {
         'text': 'User "' + loggedUser.username + '" disconnected',
         'type': 'logout'
@@ -44,7 +44,6 @@ io.on('connection', (socket) => {
         'type': 'login'
       };
 
-      console.log(serviceMessage.text);
       socket.broadcast.emit('service-message', serviceMessage);
     }
   });
@@ -53,7 +52,18 @@ io.on('connection', (socket) => {
    * Réception de l'événement 'chat-message' et réémission vers tous les utilisateurs
    */
   socket.on('chat-message', (message) => {
-    if (message.text.indexOf('/uber to') !== - 1) {
+    if (message.text.indexOf('/hearstone') !== - 1) {
+      console.log(message.text);
+      const request = message.text.substring(message.text.indexOf('/hearstone') + 11);
+      const mybotHearstone = new Bothearstone(request);
+
+      mybotHearstone.run();
+      console.log(request);
+      console.log(mybotHearstone.getJson());
+      message.username = 'L\'aubergiste';
+      message.url = mybotHearstone.getImg(0);
+      socket.emit('message-hearstone', message);
+    } else if (message.text.indexOf('/uber to') !== - 1) {
       const request = message.text.substring(message.text.indexOf('/uber to') + 8);
 
       getCoords(request)
@@ -61,7 +71,7 @@ io.on('connection', (socket) => {
           const mybotUber = new Botuber(message.longitude, message.latitude, coords.lng, coords.lat);
 
           mybotUber.run();
-          geocoder.reverseGeocode(message.latitude, message.longitude, function gecod (err, data) {
+          geocoder.reverseGeocode(message.latitude, message.longitude, (err, data) => {
             if (err) {
               return null;
             }
@@ -102,17 +112,19 @@ io.on('connection', (socket) => {
           });
         });
     } else if (message.text.indexOf('/carouf') !== - 1) {
-      console.log('Carrouf');
       message.username = 'Carrouf le ouf';
       const mybotCarouf = new Botcarouf(message.longitude, message.latitude);
 
       mybotCarouf.run();
-      message.latitude = mybotCarouf.getLatitude(0);
-      message.longitude = mybotCarouf.getLongitude(0);
-      socket.emit('message-bot-carrouf', message);
-    } else if (message.text.indexOf('/ytb') !== - 1) {
-      console.log('youtube');
-      const request = message.text.substring(message.text.indexOf('/ytb') + 4);
+      for (let i = 0; i < 5; i ++) {
+        message.choix = 'choix ' + i;
+        message.address = mybotCarouf.getAdress(i);
+        message.latitude = mybotCarouf.getLatitude(i);
+        message.longitude = mybotCarouf.getLongitude(i);
+        socket.emit('message-bot-carrouf', message);
+      }
+    } else if (message.text.indexOf('/ytb search') !== - 1) {
+      const request = message.text.substring(message.text.indexOf('/ytb search') + 11);
       const mybot = new Botyt(request);
 
       mybot.run();
@@ -121,19 +133,27 @@ io.on('connection', (socket) => {
         if (mybot.getId(i)) {
           message.username = 'Prince of YouTube';
           message.log = log();
-          console.log(mybot.getImgVideo(i));
           message.title = mybot.getTitleVideo(i);
           message.urlVid = mybot.getImgVideo(i);
           message.id = mybot.getId(i);
           socket.emit('message-bot-youtube', message);
         }
       }
-      console.log(mybot.getId(1));
+    } else if (message.text.indexOf('/help') !== - 1) {
+      const helper = [
+        '/ytb search (name of video)',
+        '/carouf (permet d\'avoir la liste des carrefour a proximité)',
+        '/uber to (ville ou vous souhaitez aller)'];
+
+      for (let i = 0; i < helper.length; i ++) {
+        message.username = 'Père castor';
+        message.help = helper[i];
+        socket.emit('message-helper', message);
+      }
     } else {
-      console.log('normal');
       message.username = loggedUser.username;
       message.log = log();
-      console.log('message de : ' + message.username);
+
       io.emit('chat-message', message);
     }
   });
@@ -141,5 +161,5 @@ io.on('connection', (socket) => {
 
 // On lance le serveur en écoutant les connexions arrivant sur le port 3000
 server.listen(3000, () => {
-  console.log('Server is listening on *:3000');
+
 });

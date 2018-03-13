@@ -51,7 +51,27 @@ socket.on('message-error', (message) => {
   nouveauMessage.appendChild(textnode);
   document.querySelector('#messages').appendChild(nouveauMessage);
 });
+//reception d'un helper
+socket.on('message-helper', (message) => {
+  document.querySelector('#m').value = '';
+  const nouveauMessage = document.createElement('li');
+  const textnode = document.createTextNode(message.username + ': ' + message.help);
 
+  nouveauMessage.appendChild(textnode);
+  document.querySelector('#messages').appendChild(nouveauMessage);
+});
+//reception d'un helper
+socket.on('message-hearstone', (message) => {
+  document.querySelector('#m').value = '';
+  const nouveauMessage = document.createElement('li');
+  const img = document.createElement('img');
+  const textnode = document.createTextNode(message.username + ': ');
+
+  img.setAttribute('src', message.url);
+  nouveauMessage.appendChild(textnode);
+  nouveauMessage.appendChild(img);
+  document.querySelector('#messages').appendChild(nouveauMessage);
+});
 //reception d'un message du bot youtube
 socket.on('message-bot-youtube', (message) => {
   const nouveauMessage = document.createElement('li');
@@ -94,22 +114,23 @@ socket.on('message-bot-uber', (message) => {
   nouveauMessage.appendChild(textnode);
   nouveauMessage.appendChild(nouveauIframe);
   document.querySelector('#messages').appendChild(nouveauMessage);
-  //console.log(message);
 });
 //reception d'un message du bot carrefour
 socket.on('message-bot-carrouf', (message) => {
   document.querySelector('#m').value = '';
   const nouveauMessage = document.createElement('li');
-  const textnode = document.createTextNode(`${message.username} :`);
+  const textnode = document.createTextNode(`${message.username} : ${message.choix} ${message.address} (clique pour voir la map)`);
 
-  const nouveauIframe = document.createElement('iframe');
+  nouveauMessage.addEventListener('click', (e) => {
+    e.preventDefault();
+    const nouveauIframe = document.createElement('iframe');
 
-  nouveauIframe.setAttribute('src', `https://www.google.com/maps/embed/v1/place?key=AIzaSyC7RyFv7u6BLK5sEYUcSF9y2x_lqGg0iVA&q=${message.latitude},${message.longitude}`);
-  nouveauIframe.setAttribute('width', '650');
-  nouveauIframe.setAttribute('height', '300');
-
+    nouveauIframe.setAttribute('src', `https://www.google.com/maps/embed/v1/place?key=AIzaSyC7RyFv7u6BLK5sEYUcSF9y2x_lqGg0iVA&q=${message.latitude},${message.longitude}`);
+    nouveauIframe.setAttribute('width', '650');
+    nouveauIframe.setAttribute('height', '300');
+    document.querySelector('#messages').appendChild(nouveauIframe);
+  });
   nouveauMessage.appendChild(textnode);
-  nouveauMessage.appendChild(nouveauIframe);
   document.querySelector('#messages').appendChild(nouveauMessage);
 });
 
@@ -118,7 +139,7 @@ const sendUser = document.querySelector('#logger');
 
 sendUser.addEventListener('click', (e) => {
   e.preventDefault();
-  console.log('toto');
+
   const user = {
     'username': document.querySelector('#login input').value
   };
@@ -134,8 +155,6 @@ sendUser.addEventListener('click', (e) => {
 function getLocation () {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(showPosition);
-  } else {
-    console.log('Geolocation is not supported by this browser.');
   }
 }
 
